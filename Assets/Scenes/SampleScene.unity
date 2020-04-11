@@ -349,7 +349,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1088408891}
   - component: {fileID: 1088408890}
-  - component: {fileID: 1088408892}
+  - component: {fileID: 1088408893}
   m_Layer: 0
   m_Name: Game Master
   m_TagString: Untagged
@@ -412,7 +412,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1088408892
+--- !u!114 &1088408893
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -421,7 +421,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 1088408889}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91a4408747c55c14a815596e96552bf4, type: 3}
+  m_Script: {fileID: 11500000, guid: c16719e0976a8d64c8d837333cb12391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   masterPlayerID: 0
+  masterCardType: 0
