@@ -2,60 +2,45 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.U2D;
 
 public class CardPicking : MonoBehaviour
 {
 
-    private bool cardOfMasterType = false;
-
-
     private void OnMouseDown()
     {
-
-        EndOfTurnCalculation endOfTurnCalculation = GameObject.Find("Game Master").GetComponent<EndOfTurnCalculation>();
-        int parentID = transform.parent.gameObject.GetComponent<PlayerController>().playerID;
-    
-        // Checking if it's this player's move
-        if (endOfTurnCalculation.masterPlayerID== parentID)
+        if(GetComponent<CardProperties>().pickable)
         {
-            
-            // Checking if it's the first player in a round
-            if (parentID==0)
+            EndOfTurnCalculation endOfTurnCalculation = GameObject.Find("Game Master").GetComponent<EndOfTurnCalculation>();
+
+            if(transform.parent.GetComponent<PlayerController>().playerID==0)
             {
                 endOfTurnCalculation.masterCardType = GetComponent<CardProperties>().type;
-
-                cardMove(endOfTurnCalculation);
             }
-            else
+
+            // Moving the card
+            transform.position = new Vector3(12, transform.position.y, transform.position.z);
+            // Ending the player's move
+            endOfTurnCalculation.masterPlayerID = endOfTurnCalculation.masterPlayerID + 1;
+            // Taging the played card with proper tag
+            gameObject.tag = "CardInPlay";
+
+            // Turning of ability to pick a card for this player
+            GetComponent<CardProperties>().pickable = false;
+            foreach (Transform child in transform.parent)
             {
-                // Checking if there exists a card with of a proper type in a player's hand
-                foreach (Transform child in transform.parent)
+                if(child.tag == "Card")
                 {
-                    if (child.GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType)
-                    {
-                        cardOfMasterType = true;
-                    }
+                    child.gameObject.GetComponent<CardProperties>().pickable = false;
                 }
 
-                // Checink if the card is of a proper type, or if there isn't any card of a proper type in a player's hand
-                if (GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType || !cardOfMasterType)
+                if (child.tag == "Indicator")
                 {
-                    cardMove(endOfTurnCalculation);
+                    child.gameObject.SetActive(false);
                 }
             }
-
-                                  
-        }
+        } 
     }
 
-    // Function moving the card
-    void cardMove(EndOfTurnCalculation endOfTurnCalculation)
-    {
-        // Moving the card
-        transform.position = new Vector3(12, transform.position.y, transform.position.z);
-        // Ending the player's move
-        endOfTurnCalculation.masterPlayerID = endOfTurnCalculation.masterPlayerID + 1;
-        // Taging the played card with proper tag
-        gameObject.tag = "CardInPlay";
-    }
+   
 }
