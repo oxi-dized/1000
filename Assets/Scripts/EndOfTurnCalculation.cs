@@ -16,6 +16,7 @@ public class EndOfTurnCalculation : MonoBehaviour
     private int[] valuesOfCardsInPlay = new int[3];
     private int[] typesOfCardsInPlay = new int[3];
     private int[] weightedValuesOfCardsInPlay = new int[3];
+    private bool[] marriageOfCardsInPlay = new bool[3];
 
     private void Start()
     {
@@ -38,11 +39,35 @@ public class EndOfTurnCalculation : MonoBehaviour
                 typesOfCardsInPlay[i] = Convert.ToInt32(card.GetComponent<CardProperties>().type == masterCardType);
                 // Array of values of cards in play
                 valuesOfCardsInPlay[i] = card.GetComponent<CardProperties>().value;
+                // Array of values of marriage of cards in play
+                marriageOfCardsInPlay[i] = card.GetComponent<CardProperties>().marriage;
                 // Array of values of cards in play of a proper type
                 weightedValuesOfCardsInPlay[i] = valuesOfCardsInPlay[i] * typesOfCardsInPlay[i];
                 i++;
                 Destroy(card);
             }
+
+            bool marriageExists = false;
+            for(int j = 0; j < 3; j++)
+            {
+                marriageExists = marriageExists || marriageOfCardsInPlay[j];
+            }
+            
+            if(marriageExists)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    weightedValuesOfCardsInPlay[j] = valuesOfCardsInPlay[j] * Convert.ToInt32(marriageOfCardsInPlay[j]);
+                }
+            }
+            else
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    weightedValuesOfCardsInPlay[j] = valuesOfCardsInPlay[j] * typesOfCardsInPlay[j];
+                }
+            }
+
 
             // Maximal value of cards in play
             int maximalValue = weightedValuesOfCardsInPlay.Max();
@@ -50,7 +75,11 @@ public class EndOfTurnCalculation : MonoBehaviour
             // Player winnig this turn
             int winningPlayer;
 
-            if (weightedValuesOfCardsInPlay.Sum()==0)
+            if(weightedValuesOfCardsInPlay.Sum() == 0 && marriageExists)
+            {
+                winningPlayer = Array.IndexOf(marriageOfCardsInPlay, true);
+            }
+            if(weightedValuesOfCardsInPlay.Sum() == 0 && !marriageExists)
             {
                 winningPlayer = 0;
             }

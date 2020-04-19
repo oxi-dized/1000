@@ -10,6 +10,10 @@ public class CardProperties : MonoBehaviour
     // Numerical value of a card
     // Nine = 0; Jack = 2; Queen = 3; King = 4; Ten = 10; Ace = 11;
     public int value;
-
-    public bool pickable;
+    // Flags card as beeing possible to pick
+    public bool pickable = false;
+    // Flags a card if marriage of that type was played
+    public bool marriage = false;
+    // Flags a card as beeing able to initiate marriage
+    public bool possibleMarriage = false;
 }

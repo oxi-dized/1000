@@ -16,6 +16,25 @@ public class CardPicking : MonoBehaviour
             if(transform.parent.GetComponent<PlayerController>().playerID==0)
             {
                 endOfTurnCalculation.masterCardType = GetComponent<CardProperties>().type;
+
+                // Marriage initiation
+                if(GetComponent<CardProperties>().possibleMarriage == true)
+                {
+                    GameObject[] cards = GameObject.FindGameObjectsWithTag("Card");
+                    foreach(GameObject card in cards)
+                    {
+                        if(card.GetComponent<CardProperties>().type == GetComponent<CardProperties>().type)
+                        {
+                            card.GetComponent<CardProperties>().marriage = true;
+                        }
+                        else
+                        {
+                            card.GetComponent<CardProperties>().marriage = false;
+                        }
+                    }
+
+                    transform.parent.gameObject.GetComponent<PlayerController>().score += GetComponent<CardProperties>().type * 20 + 20;
+                }
             }
 
             // Moving the card
@@ -31,7 +50,9 @@ public class CardPicking : MonoBehaviour
             {
                 if(child.tag == "Card")
                 {
-                    child.gameObject.GetComponent<CardProperties>().pickable = false;
+                    CardProperties cardProperties = child.gameObject.GetComponent<CardProperties>();
+                    cardProperties.pickable = false;
+                    cardProperties.possibleMarriage = false;
                 }
 
                 if (child.tag == "Indicator")

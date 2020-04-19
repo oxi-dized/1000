@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
@@ -10,8 +11,8 @@ public class PlayerController : MonoBehaviour
     public int playerID;
     public int score;
     public bool cardCheck = true;
-    public int maximalValueWithProperType = -1;
     public Text scoreText;
+
 
 
     private GameObject[] cardsInPlay;
@@ -21,27 +22,50 @@ public class PlayerController : MonoBehaviour
         EndOfTurnCalculation endOfTurnCalculation = GameObject.Find("Game Master").GetComponent<EndOfTurnCalculation>();
         if (endOfTurnCalculation.masterPlayerID == playerID && cardCheck)
         {
+
+            foreach (Transform child in transform)
+            {
+                if (child.tag == "Indicator")
+                {
+                    child.gameObject.SetActive(true);
+                }
+            }
+
             if (playerID == 0)
             {
 
+
                 foreach (Transform child in transform)
                 {
+
+
                     if (child.tag == "Card")
                     {
-                        child.gameObject.GetComponent<CardProperties>().pickable = true;
+                        CardProperties cardProperties = child.gameObject.GetComponent<CardProperties>();
+                        // First player can pick any card so all are flaged as pickable
+                        cardProperties.pickable = true;
                         cardCheck = false;
-                        
-                    }
-                    if(child.tag == "Indicator")
-                    {
-                        child.gameObject.SetActive(true);
+
+                        // Checking and flaging if marriage is possible
+                        foreach (Transform child2 in transform)
+                        {
+                            if (child2.tag == "Card")
+                            {
+                                CardProperties cardProperties2 = child2.gameObject.GetComponent<CardProperties>();
+                                if (cardProperties.type == cardProperties2.type && cardProperties.value == 3 && cardProperties2.value == 4)
+                                {
+                                    cardProperties.possibleMarriage = true;
+                                    cardProperties2.possibleMarriage = true;
+                                }
+                            }
+                        }
+
                     }
                 }
 
             }
             else
             {
-                // Extracting the maximal value of a card in play with a proper type
                 cardsInPlay = GameObject.FindGameObjectsWithTag("CardInPlay");
                 int maximalValueOfCardsInPlay = 0;
                 for (int i = 0; i < cardsInPlay.GetLength(0); i++)
@@ -53,47 +77,163 @@ public class PlayerController : MonoBehaviour
                     }
                 }
 
-                // Checking if there exists a card with of a proper type in a player's hand
-                foreach (Transform child in transform)
+                bool marriageInPlay = false;
+                int maximalValueOfCardsWithMarriageInPlay = 0;
+                for (int i = 0; i < cardsInPlay.GetLength(0); i++)
                 {
-                    if (child.tag == "Card")
+                    marriageInPlay = marriageInPlay || (cardsInPlay[i].GetComponent<CardProperties>().marriage && !(cardsInPlay[i].GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType));
+                    int weightedMarriageValue = Convert.ToInt32(cardsInPlay[i].GetComponent<CardProperties>().marriage)* cardsInPlay[i].GetComponent<CardProperties>().value;
+                    if(weightedMarriageValue > maximalValueOfCardsWithMarriageInPlay)
                     {
-                        if (child.gameObject.GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType)
+                        maximalValueOfCardsWithMarriageInPlay = weightedMarriageValue;
+                    }
+                }
+
+                bool cardsInHandWithPropperType = false;
+                for (int i = 0; i < transform.childCount; i++)
+                {                    
+                    if(transform.GetChild(i).tag == "Card")
+                    {                      
+                        if(transform.GetChild(i).gameObject.GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType)
                         {
-                            if (child.gameObject.GetComponent<CardProperties>().value > maximalValueWithProperType)
+                            cardsInHandWithPropperType = true;
+                        }
+                    }
+                }
+                if (cardsInHandWithPropperType)
+                {
+                    if (marriageInPlay)
+                    {
+                        for (int i = 0; i < transform.childCount; i++)
+                        {
+                            if (transform.GetChild(i).tag == "Card")
                             {
-                                maximalValueWithProperType = child.gameObject.GetComponent<CardProperties>().value;
+                                if (transform.GetChild(i).gameObject.GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType)
+                                {
+                                    transform.GetChild(i).gameObject.GetComponent<CardProperties>().pickable = true;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        bool cardInHandCanTake = false;
+                        for (int i = 0; i < transform.childCount; i++)
+                        {
+                            if (transform.GetChild(i).tag == "Card")
+                            {
+                                if (transform.GetChild(i).gameObject.GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType && transform.GetChild(i).gameObject.GetComponent<CardProperties>().value > maximalValueOfCardsInPlay)
+                                {
+                                    transform.GetChild(i).gameObject.GetComponent<CardProperties>().pickable = true;
+                                    cardInHandCanTake = true;
+                                }
+                            }
+                        }
+
+                        if (!cardInHandCanTake)
+                        {
+                            for (int i = 0; i < transform.childCount; i++)
+                            {
+                                if (transform.GetChild(i).tag == "Card")
+                                {
+                                    if (transform.GetChild(i).gameObject.GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType)
+                                    {
+                                        transform.GetChild(i).gameObject.GetComponent<CardProperties>().pickable = true;
+                                    }
+                                }
                             }
                         }
                     }
                 }
-
-                foreach (Transform child in transform)
+                else
                 {
-                    if (child.tag == "Card")
+                    bool marriageInHand = false;
+                    for (int i = 0; i < transform.childCount; i++)
                     {
-                        // Checking if this card can be played, so there are no cards in hand of a proper type or this card is of a proper type and also one of two is true: 
-                        // this card value is higher than max value of cards in play or no card in hand has a higher value than max value of cards in play
-                        if (maximalValueWithProperType == -1 || (child.gameObject.GetComponent<CardProperties>().type == endOfTurnCalculation.masterCardType && (maximalValueWithProperType < maximalValueOfCardsInPlay || child.gameObject.GetComponent<CardProperties>().value > maximalValueOfCardsInPlay)))
+                        if (transform.GetChild(i).tag == "Card")
                         {
-                            child.gameObject.GetComponent<CardProperties>().pickable = true;
-                            cardCheck = false;
+                            if(transform.GetChild(i).gameObject.GetComponent<CardProperties>().marriage)
+                            {
+                                marriageInHand = true;
+                            }
                         }
                     }
 
-                    if (child.tag == "Indicator")
+                    if(marriageInHand)
                     {
-                        child.gameObject.SetActive(true);
+                        if(marriageInPlay)
+                        {
+                            bool cardInHandCanTake = false;
+                            for (int i = 0; i < transform.childCount; i++)
+                            {
+                                if (transform.GetChild(i).tag == "Card")
+                                {
+                                    if (transform.GetChild(i).gameObject.GetComponent<CardProperties>().marriage && transform.GetChild(i).gameObject.GetComponent<CardProperties>().value>maximalValueOfCardsWithMarriageInPlay)
+                                    {
+                                        cardInHandCanTake = true;
+                                        transform.GetChild(i).gameObject.GetComponent<CardProperties>().pickable = true;
+                                    }
+                                }
+                            }
+
+                            if(!cardInHandCanTake)
+                            {
+                                foreach (Transform child in transform)
+                                {
+                                    if (child.tag == "Card")
+                                    {
+                                        child.gameObject.GetComponent<CardProperties>().pickable = true;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (Transform child in transform)
+                            {
+                                if (child.tag == "Card")
+                                {
+                                    if(child.gameObject.GetComponent<CardProperties>().marriage)
+                                    {
+                                        child.gameObject.GetComponent<CardProperties>().pickable = true;
+                                    }
+                                }
+                            }  
+                        }
                     }
-
+                    
+                    else
+                    {
+                        foreach (Transform child in transform)
+                        {
+                            if (child.tag == "Card")
+                            { 
+                                child.gameObject.GetComponent<CardProperties>().pickable = true;
+                            }
+                        }
+                    }
                 }
-
-
-
-                // Reseting the value
-                maximalValueWithProperType = -1;
-
             }
         }                
+    }
+
+    void Marriage()
+    {
+        foreach (Transform child1 in transform)
+        {
+            foreach(Transform child2 in transform)
+            {
+                if (child1.tag == "Card"&& child2.tag == "Card")
+                {
+                    CardProperties cp1 = child1.gameObject.GetComponent<CardProperties>();
+                    CardProperties cp2 = child2.gameObject.GetComponent<CardProperties>();
+                    if (cp1.type == cp2.type && cp1.value == 3 && cp2.value == 4)
+                    {
+                        cp1.possibleMarriage = true;
+                        cp2.possibleMarriage = true;
+                    }
+                }
+            }
+        }
     }
 }
