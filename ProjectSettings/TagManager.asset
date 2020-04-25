@@ -7,6 +7,7 @@ TagManager:
   - Card
   - CardInPlay
   - Indicator
+  - Score
   layers:
   - Default
   - TransparentFX
