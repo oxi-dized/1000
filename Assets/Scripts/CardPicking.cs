@@ -9,6 +9,7 @@ public class CardPicking : MonoBehaviour
 
     private void OnMouseDown()
     {
+        
         if(GetComponent<CardProperties>().pickable)
         {
             EndOfTurnCalculation endOfTurnCalculation = GameObject.Find("Game Master").GetComponent<EndOfTurnCalculation>();

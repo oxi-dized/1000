@@ -16,4 +16,6 @@ public class CardProperties : MonoBehaviour
     public bool marriage = false;
     // Flags a card as beeing able to initiate marriage
     public bool possibleMarriage = false;
+    // Card order for possition in hand
+    public int order;
 }

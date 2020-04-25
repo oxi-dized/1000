@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3604507179468771037}
   - component: {fileID: 5741433263970520596}
   - component: {fileID: 3571104740592563216}
+  - component: {fileID: 4651233254319470568}
   m_Layer: 0
   m_Name: 1-4
   m_TagString: Card
@@ -98,7 +99,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   value: 4
-  priority: 0
+  pickable: 0
+  marriage: 0
+  possibleMarriage: 0
+  order: 3
 --- !u!61 &5741433263970520596
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -135,5 +139,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af197de589ed1a24fbbfb458c41a5f18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4651233254319470568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2865239113991862043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b2248bceee051a4e96f7028cd1b83b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
