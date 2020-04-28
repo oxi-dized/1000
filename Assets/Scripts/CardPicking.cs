@@ -55,11 +55,6 @@ public class CardPicking : MonoBehaviour
                     cardProperties.pickable = false;
                     cardProperties.possibleMarriage = false;
                 }
-
-                if (child.tag == "Indicator")
-                {
-                    child.gameObject.SetActive(false);
-                }
             }
         } 
     }

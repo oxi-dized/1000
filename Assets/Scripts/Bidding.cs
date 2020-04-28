@@ -5,11 +5,11 @@ using UnityEngine;
 public class Bidding : MonoBehaviour
 {
     // Signal that shuffle is done and bidding may start
-    public bool biddingPhase = false;
+    public int biddingPhase = 0;
     // Currently bidding player
     public int playerBidding = 0;
     // How many players passed
-    public int playerPassed = 0;
+    private int playerPassed = 0;
     // Idicator that it is the first bid
     public bool firstRound = true;
     // Maximal bid on the table
@@ -21,7 +21,7 @@ public class Bidding : MonoBehaviour
 
     private void Update()
     {
-        if(biddingPhase)
+        if(biddingPhase==3)
         {
             players = GameObject.FindGameObjectsWithTag("Player");
             // When the first player is bidding it's automatically 100. All buttons are anabled
@@ -50,19 +50,40 @@ public class Bidding : MonoBehaviour
                 }
                 firstRound = false;
             }
-            // Skiping the turn of a player that passed
+            
             for(int i = 0; i < 3; i++)
             {
+                PlayerController playerController = players[i].GetComponent<PlayerController>();
+
+                // Checking for 120 rule
+                if (maximalBid >= 120 && !playerController.marriageInHand && players[i].GetComponent<PlayerController>().playerID == playerBidding && !playerController.pass)
+                {
+                    playerController.pass = true;
+                    playerController.bid = 0;
+                    playerController.bidText.text = "Pass";
+                }
+
+                // Skiping the turn of a player that passed
                 if (players[i].GetComponent<PlayerController>().pass && players[i].GetComponent<PlayerController>().playerID == playerBidding)
                 {
                     playerBidding = (playerBidding + 1) % 3;
                 }
 
             }
+
+            playerPassed = 0;
+            foreach(GameObject player in players)
+            {
+                if(player.GetComponent<PlayerController>().pass)
+                {
+                    playerPassed++;
+                }
+            }
+
             // If two players has passed there is a winner and bidding is over
             if(playerPassed == 2)
             {
-                biddingPhase = false;
+                biddingPhase = 0;
                 foreach (GameObject player in players)
                 {
                     player.GetComponent<PlayerController>().bidText.text = " ";

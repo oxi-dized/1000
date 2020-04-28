@@ -33,8 +33,8 @@ public class FinalBid : MonoBehaviour
                     slider.maxValue = 32;
                     text = Instantiate(finalBidText, new Vector3(300, 29 * player.transform.position.y + 20, 0), Quaternion.identity);
                     text.transform.SetParent(GameObject.Find("Canvas").transform, false);
-                    text.text = "Bid: " + slider.value;
-                    button = Instantiate(bidButton, new Vector3(300, 29 * player.transform.position.y - 20, 0), Quaternion.identity);
+                    text.text = "Bid: " + slider.value*10;
+                    button = Instantiate(bidButton, new Vector3(300, 29 * player.transform.position.y - 30, 0), Quaternion.identity);
                     button.transform.SetParent(GameObject.Find("Canvas").transform, false);
                     button.onClick.AddListener(TaskOnClick);
 

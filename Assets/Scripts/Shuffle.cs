@@ -10,8 +10,6 @@ public class Shuffle : MonoBehaviour
     private int deckSize = 24;
     // Array with all cards - deck
     private int[] deck = new int[24];
-    // Int that stores the index of the player in the player list for which playerID = 0
-    private int indexWithZeroID;
     // List of cards - prefabs
     public GameObject[] card;
     // List of dealing cards
@@ -33,13 +31,9 @@ public class Shuffle : MonoBehaviour
     {
         if(shuffleStart)
         {
-            for(int i = 0; i < 3; i++)
-            {
-                if (players[i].GetComponent<PlayerController>().playerID == 0)
-                {
-                    indexWithZeroID = i;
-                }
-            }
+            
+            // Resteting this value in case there was a reshuffle
+            GetComponent<Bidding>().biddingPhase = 0;
 
             // Filling up the deck with cards
             for (int i = 0; i < 24; i++)
@@ -69,7 +63,39 @@ public class Shuffle : MonoBehaviour
                 dealingCards[i] = card[deck[21 + i]];
                     
             }
-            GetComponent<Bidding>().biddingPhase = true;
+
+
+            foreach(GameObject player in players)
+            {
+                player.GetComponent<PlayerController>().marriageInHand = false;
+
+                // Marriage check for 120 bid rule
+                foreach (Transform child in player.transform)
+                {
+                    if (child.CompareTag("Card"))
+                    {
+                        CardProperties cardProperties = child.gameObject.GetComponent<CardProperties>();
+                        foreach (Transform child2 in player.transform)
+                        {
+                            if (child2.CompareTag("Card"))
+                            {
+                                
+                                CardProperties cardProperties2 = child2.gameObject.GetComponent<CardProperties>();
+                                if (cardProperties.type == cardProperties2.type && cardProperties.value == 3 && cardProperties2.value == 4)
+                                {
+                                    player.GetComponent<PlayerController>().marriageInHand = true;
+                                    
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+
+                player.GetComponent<RulesInHand>().ruleInHandCheck = true;
+            }
+
             shuffleStart = false;
         }       
     }

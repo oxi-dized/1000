@@ -10,6 +10,7 @@ public class EndOfTurnCalculation : MonoBehaviour
     public int masterPlayerID;
     // Type of the first played card
     public int masterCardType;
+    public int turnCounter = 0;
 
     private GameObject[] cardsInPlay;
     private GameObject[] players;
@@ -26,7 +27,8 @@ public class EndOfTurnCalculation : MonoBehaviour
     private void Update()
     {
         if (masterPlayerID == 3)
-        {           
+        {
+            turnCounter++;
             // List of all the cards in play 
             cardsInPlay = GameObject.FindGameObjectsWithTag("CardInPlay");
             // Iterator

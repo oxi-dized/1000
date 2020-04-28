@@ -12,10 +12,14 @@ public class PlayerController : MonoBehaviour
     public int score;
     public bool cardCheck = false;
     public Text scoreText;
+    public Text totalScoreText;
     public Text bidText;
-    public Slider bidSlider;
+    public GameObject indicator;
     public int bid = 0;
     public bool pass = false;
+    public int roundPlayerID;
+    public int totallScore = 0;
+    public bool marriageInHand = false;
 
 
 
@@ -28,14 +32,6 @@ public class PlayerController : MonoBehaviour
         {
 
             cardCheck = false;
-            // Activating the player indicator
-            foreach (Transform child in transform)
-            {
-                if (child.CompareTag("Indicator"))
-                {
-                    child.gameObject.SetActive(true);
-                }
-            }
 
             // When the first player moves, they can select any card
             if (playerID == 0)
